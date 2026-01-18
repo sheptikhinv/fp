@@ -14,12 +14,12 @@ public class BasicCloudRenderer : ICloudRenderer
         _random = new Random();
     }
 
-    public Bitmap RenderCloud(List<WordLayout> wordLayouts, VisualizationOptions visualizationOptions)
+    public Result<Bitmap> RenderCloud(List<WordLayout> wordLayouts, VisualizationOptions visualizationOptions)
     {
         var bitmap = CreateBitmapForCloud(wordLayouts, visualizationOptions.ImageWidthPx,
             visualizationOptions.ImageHeightPx, visualizationOptions.Padding);
         DrawWordsOnBitmap(bitmap, wordLayouts, visualizationOptions);
-        return bitmap;
+        return bitmap.AsResult();
     }
 
     private Bitmap CreateBitmapForCloud(List<WordLayout> wordLayouts, int? imageWidthPx, int? imageHeightPx,

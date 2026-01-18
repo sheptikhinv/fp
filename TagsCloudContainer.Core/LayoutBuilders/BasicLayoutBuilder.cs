@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using TagsCloudContainer.Core.CoordinateGenerators;
 using TagsCloudContainer.Core.DTOs;
+using TagsCloudContainer.Core.Utils;
 using TagsCloudContainer.Core.Visualizators;
 
 namespace TagsCloudContainer.Core.LayoutBuilders;
@@ -16,10 +17,10 @@ public class BasicLayoutBuilder : ILayoutBuilder
         _visualizationOptions = visualizationOptions;
     }
 
-    public List<WordLayout> BuildLayout(Dictionary<string, int> wordFrequencies)
+    public Result<List<WordLayout>> BuildLayout(Dictionary<string, int> wordFrequencies)
     {
         if (wordFrequencies.Count == 0)
-            return new List<WordLayout>();
+            return new List<WordLayout>().AsResult();
 
         var layouts = new List<WordLayout>();
         var maxFrequency = wordFrequencies.Values.Max();
@@ -39,7 +40,7 @@ public class BasicLayoutBuilder : ILayoutBuilder
             });
         }
 
-        return layouts;
+        return layouts.AsResult();
     }
 
     private float CalculateFontSize(int frequency, int maxFrequency)

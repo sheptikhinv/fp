@@ -1,27 +1,28 @@
+using TagsCloudContainer.Core.Utils;
+
 namespace TagsCloudContainer.Core.FileReaders;
 
 public class TxtFileReader : IFileReader
 {
     private static readonly string[] SupportedExtensions = [".txt"];
 
-    public bool CanReadFile(string extension)
+    public Result<bool> CanReadFile(string extension)
     {
         return !extension.StartsWith('.')
-            ? throw new ArgumentException($"Invalid file extension: {extension}")
-            : SupportedExtensions.Contains(extension);
+            ? Result.Fail<bool>($"Invalid file extension: {extension}")
+            : Result.Ok(SupportedExtensions.Contains(extension));
     }
 
-    public List<string> ReadWords(string filePath)
+    public Result<List<string>> ReadWords(string filePath)
     {
         try
         {
             var lines = File.ReadAllLines(filePath);
-            return lines.ToList();
+            return Result.Ok(lines.ToList());
         }
         catch (IOException e)
         {
-            Console.WriteLine($"File at {filePath} could not be read: {e.Message}");
-            throw;
+            return Result.Fail<List<string>>($"File at {filePath} could not be read: {e.Message}");
         }
     }
 }

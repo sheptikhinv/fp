@@ -1,4 +1,5 @@
 using TagsCloudContainer.Core.FileReaders;
+using TagsCloudContainer.Core.Utils;
 using TagsCloudContainer.Core.WordFilters;
 using TagsCloudContainer.Core.WordProcessing.WordProcessingRules;
 
@@ -16,19 +17,19 @@ public class WordsProcessor
         _wordProcessingRules = wordProcessingRules;
     }
 
-    public Dictionary<string, int> ProcessAndCountWords(IEnumerable<string> words)
-{
-    var processedWords = words;
-    
-    foreach (var rule in _wordProcessingRules)
+    public Result<Dictionary<string, int>> ProcessAndCountWords(IEnumerable<string> words)
     {
-        processedWords = rule.Process(processedWords);
-    }
+        var processedWords = words;
 
-    var filteredWords = _boringWordsFilter.ExcludeBoringWords(processedWords.ToList());
-    var result = CountWords(filteredWords);
-    return result;
-}
+        foreach (var rule in _wordProcessingRules)
+        {
+            processedWords = rule.Process(processedWords);
+        }
+
+        var filteredWords = _boringWordsFilter.ExcludeBoringWords(processedWords.ToList());
+        var result = CountWords(filteredWords);
+        return result.AsResult();
+    }
 
     private Dictionary<string, int> CountWords(List<string> words)
     {
