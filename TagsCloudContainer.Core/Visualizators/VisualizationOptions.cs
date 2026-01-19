@@ -9,7 +9,7 @@ public record VisualizationOptions
     public float FontSize { get; init; } = VisualizationDefaults.FontSize;
     public Color BackgroundColor { get; init; } = VisualizationDefaults.BackgroundColor;
     public Color? FontColor { get; init; }
-    public string? FontFamily { get; init; } = VisualizationDefaults.FontFamily;
+    public string FontFamily { get; init; } = VisualizationDefaults.FontFamily;
     public int? ImageWidthPx { get; init; }
     public int? ImageHeightPx { get; init; }
 }

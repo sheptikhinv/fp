@@ -14,7 +14,7 @@ public class BasicCloudRenderer : ICloudRenderer
     {
         _random = new Random();
     }
-    
+
     public Result<Bitmap> RenderCloud(List<WordLayout> wordLayouts, VisualizationOptions visualizationOptions)
     {
         var bitmap = CalculateCloudBounds(wordLayouts).AsResult()
@@ -60,13 +60,13 @@ public class BasicCloudRenderer : ICloudRenderer
         if (wordLayouts.Count == 0)
             return bitmap.AsResult();
 
+        var cloudBounds = CalculateCloudBounds(wordLayouts);
         if (visualizationOptions.ImageWidthPx > 0)
         {
-            DrawWordsWithFixedSize(graphics, wordLayouts, visualizationOptions);
+            DrawWordsWithFixedSize(graphics, wordLayouts, cloudBounds, visualizationOptions);
         }
         else
         {
-            var cloudBounds = CalculateCloudBounds(wordLayouts);
             foreach (var layout in wordLayouts)
             {
                 DrawSingleWord(graphics, layout, cloudBounds, visualizationOptions);
@@ -76,10 +76,9 @@ public class BasicCloudRenderer : ICloudRenderer
         return bitmap.AsResult();
     }
 
-    private void DrawWordsWithFixedSize(Graphics graphics, List<WordLayout> wordLayouts,
+    private void DrawWordsWithFixedSize(Graphics graphics, List<WordLayout> wordLayouts, CloudBounds cloudBounds,
         VisualizationOptions visualizationOptions)
     {
-        var cloudBounds = CalculateCloudBounds(wordLayouts);
         var centerX = visualizationOptions.ImageWidthPx.Value / 2;
         var centerY = visualizationOptions.ImageHeightPx.Value / 2;
 
