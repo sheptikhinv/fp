@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using TagsCloudContainer.Core.CoordinateGenerators;
-using TagsCloudContainer.Core.DTOs;
+using TagsCloudContainer.Core.DTO;
 using TagsCloudContainer.Core.Utils;
 using TagsCloudContainer.Core.Visualizators;
 

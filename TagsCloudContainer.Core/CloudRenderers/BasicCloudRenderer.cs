@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using TagsCloudContainer.Core.DTOs;
+using TagsCloudContainer.Core.DTO;
 using TagsCloudContainer.Core.Utils;
 using TagsCloudContainer.Core.Visualizators;
 

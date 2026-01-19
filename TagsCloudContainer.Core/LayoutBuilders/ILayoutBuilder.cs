@@ -1,4 +1,4 @@
-﻿using TagsCloudContainer.Core.DTOs;
+﻿using TagsCloudContainer.Core.DTO;
 using TagsCloudContainer.Core.Utils;
 
 namespace TagsCloudContainer.Core.LayoutBuilders;

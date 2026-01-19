@@ -1,4 +1,4 @@
-﻿namespace TagsCloudContainer.Core.DTOs;
+﻿namespace TagsCloudContainer.Core.DTO;
 
 public readonly record struct CloudBounds(int MinX, int MinY, int MaxX, int MaxY)
 {
