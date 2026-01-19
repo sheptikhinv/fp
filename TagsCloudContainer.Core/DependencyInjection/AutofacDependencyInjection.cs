@@ -87,15 +87,9 @@ public static class AutofacDependencyInjection
         return builder;
     }
 
-    public static ContainerBuilder AddCoordinateGenerators(this ContainerBuilder builder, int imageWidth = 2048,
-        int imageHeight = 2048,
-        double angleStep = 0.1f)
+    public static ContainerBuilder AddCoordinateGenerators(this ContainerBuilder builder, double angleStep = 0.1f)
     {
-        builder.Register(c =>
-        {
-            var center = new Point(imageWidth / 2, imageHeight / 2);
-            return new SpiralCoordinateGenerator(center, angleStep);
-        }).As<ICoordinateGenerator>();
+        builder.Register(c => new SpiralCoordinateGenerator(angleStep)).As<ICoordinateGenerator>();
 
         return builder;
     }

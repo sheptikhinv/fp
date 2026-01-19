@@ -4,13 +4,11 @@ namespace TagsCloudContainer.Core.CoordinateGenerators;
 
 public class SpiralCoordinateGenerator : ICoordinateGenerator
 {
-    private readonly Point _center;
     private double _angleRadians;
     private readonly double _stepRadians;
 
-    public SpiralCoordinateGenerator(Point center, double stepRadians)
+    public SpiralCoordinateGenerator(double stepRadians)
     {
-        _center = center;
         _angleRadians = 0;
         _stepRadians = stepRadians;
     }
@@ -18,8 +16,8 @@ public class SpiralCoordinateGenerator : ICoordinateGenerator
     public Point GetNextPosition()
     {
         var radius = _stepRadians * _angleRadians;
-        var x = _center.X + radius * Math.Cos(_angleRadians);
-        var y = _center.Y + radius * Math.Sin(_angleRadians);
+        var x = radius * Math.Cos(_angleRadians);
+        var y = radius * Math.Sin(_angleRadians);
 
         _angleRadians += _stepRadians;
 

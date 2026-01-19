@@ -19,7 +19,7 @@ public class Startup
             .AddFileReaders()
             .AddWordsFilter(options.FilterFilePath)
             .AddWordsProcessor()
-            .AddCoordinateGenerators(options.OutputWidthPx ?? 100, options.OutputHeightPx ?? 100, options.AngleStepRadians)
+            .AddCoordinateGenerators(options.AngleStepRadians)
             .AddLayoutBuilder()
             .AddCloudRenderer();
     }

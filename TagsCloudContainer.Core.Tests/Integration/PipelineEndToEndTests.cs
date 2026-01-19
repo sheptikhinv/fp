@@ -48,7 +48,7 @@ public class PipelineEndToEndTests
             FontSize = 14f,
             Padding = 32
         };
-        var generator = new SpiralCoordinateGenerator(new Point(size / 2, size / 2), 0.6);
+        var generator = new SpiralCoordinateGenerator(0.6);
         var layoutBuilder = new BasicLayoutBuilder(generator, options);
         var renderer = new BasicCloudRenderer();
         var result = readerFactory.GetReader(_tempInputFile)
