@@ -38,7 +38,7 @@ public class PipelineEndToEndTests
         var boringFilter = new SpecifiedBoringWordsFilter(boringWords);
         var processor = new WordsProcessor(boringFilter, processingRules);
 
-        var size = 150;
+        var size = 2048;
         var options = new VisualizationOptions
         {
             ImageWidthPx = size,
@@ -51,11 +51,12 @@ public class PipelineEndToEndTests
         var generator = new SpiralCoordinateGenerator(new Point(size / 2, size / 2), 0.6);
         var layoutBuilder = new BasicLayoutBuilder(generator, options);
         var renderer = new BasicCloudRenderer();
-
-        var rawWords = readerFactory.GetReader(_tempInputFile).ReadWords(_tempInputFile);
-        var counts = processor.ProcessAndCountWords(rawWords);
-        var bitmap = renderer.RenderCloud(layoutBuilder.BuildLayout(counts), options);
-        FileSaver.SaveFile(bitmap, _tempOutputFile);
+        var result = readerFactory.GetReader(_tempInputFile)
+            .Then(reader => reader.ReadWords(_tempInputFile))
+            .Then(rawWords => processor.ProcessAndCountWords(rawWords))
+            .Then(counts => layoutBuilder.BuildLayout(counts))
+            .Then(layout => renderer.RenderCloud(layout, options))
+            .Then(bitmap => FileSaver.SaveFile(bitmap, _tempOutputFile));
         
         Assert.That(File.Exists(_tempOutputFile), Is.True, "Output file was not created");
         using var tempBitmap = new Bitmap(_tempOutputFile!);

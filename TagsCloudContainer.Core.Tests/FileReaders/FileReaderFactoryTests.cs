@@ -12,15 +12,15 @@ public class FileReaderFactoryTests
 
         var reader = factory.GetReader("sample.txt");
 
-        Assert.That(reader, Is.TypeOf<TxtFileReader>());
+        Assert.That(reader.GetValueOrThrow(), Is.TypeOf<TxtFileReader>());
     }
 
     [Test]
-    public void GetReader_UnsupportedExtension_Throws_Test()
+    public void GetReader_UnsupportedExtension_ReturnsError_Test()
     {
         var factory = new FileReaderFactory(new IFileReader[] { new TxtFileReader() });
-
-        Assert.Throws<NotSupportedException>(() => factory.GetReader("file.ihopetheresnofileextensionslikethis"));
+        var reader = factory.GetReader("sample.ihopetheresnofileextensionslikethis");
+        Assert.That(reader is { IsSuccess: false }, Is.True);
     }
 
     [Test]
@@ -32,9 +32,10 @@ public class FileReaderFactoryTests
             File.WriteAllLines(tempFile, new[] { "Hello", "WORLD" });
             var factory = new FileReaderFactory(new IFileReader[] { new TxtFileReader() });
 
-            var lines = factory.GetReader(tempFile).ReadWords(tempFile);
+            var reader = factory.GetReader(tempFile).GetValueOrThrow();
+            var lines = reader.ReadWords(tempFile);
 
-            CollectionAssert.AreEqual(new[] { "Hello", "WORLD" }, lines);
+            CollectionAssert.AreEqual(new[] { "Hello", "WORLD" }, lines.GetValueOrThrow());
         }
         finally
         {
