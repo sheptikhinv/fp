@@ -32,7 +32,7 @@ public class Client
             {
                 var output = options.OutputFilePath ??
                              Path.Combine(Environment.CurrentDirectory,
-                                 $"TagsCloud_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.png");
+                                 $"TagsCloud_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}{bitmap.RawFormat.GetImageExtension()}");
                 return (bitmap, output);
             })
             .Then(data => FileSaver.SaveFile(data.bitmap, data.output))
