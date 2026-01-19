@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using TagsCloudContainer.Core.DTOs;
 using TagsCloudContainer.Core.Utils;
 using TagsCloudContainer.Core.Visualizators;
@@ -14,28 +15,35 @@ public class BasicCloudRenderer : ICloudRenderer
         _random = new Random();
     }
 
+    [SuppressMessage("Interoperability", "CA1416:Проверка совместимости платформы")]
     public Result<Bitmap> RenderCloud(List<WordLayout> wordLayouts, VisualizationOptions visualizationOptions)
     {
-        var bitmap = CreateBitmapForCloud(wordLayouts, visualizationOptions.ImageWidthPx,
-            visualizationOptions.ImageHeightPx, visualizationOptions.Padding);
-        DrawWordsOnBitmap(bitmap, wordLayouts, visualizationOptions);
-        return bitmap.AsResult();
+        var bitmap = CalculateCloudBounds(wordLayouts).AsResult()
+            .Then(bounds => CreateBitmapForCloud(wordLayouts, visualizationOptions.ImageWidthPx,
+                visualizationOptions.ImageHeightPx, visualizationOptions.Padding, bounds))
+            .Then(bitmap => DrawWordsOnBitmap(bitmap, wordLayouts, visualizationOptions));
+        return bitmap;
     }
 
-    private Bitmap CreateBitmapForCloud(List<WordLayout> wordLayouts, int? imageWidthPx, int? imageHeightPx,
-        int padding)
+    private Result<Bitmap> CreateBitmapForCloud(List<WordLayout> wordLayouts, int? imageWidthPx, int? imageHeightPx,
+        int padding, CloudBounds bounds)
     {
         if (wordLayouts.Count == 0)
-            return new Bitmap(VisualizationDefaults.OutputWidthPx, VisualizationDefaults.OutputHeightPx);
+            return new Bitmap(VisualizationDefaults.OutputWidthPx, VisualizationDefaults.OutputHeightPx).AsResult();
 
         if (imageWidthPx.HasValue && imageHeightPx.HasValue)
         {
+            if (imageWidthPx.Value <= 0 || imageHeightPx.Value <= 0)
+                return Result.Fail<Bitmap>("Image size must be positive");
+
+            if (bounds.Width > imageWidthPx.Value || bounds.Height > imageHeightPx.Value)
+                return Result.Fail<Bitmap>(
+                    "Cloud bounds are larger than image size. Try to increase imageSize, or leave them empty for auto calculation");
+
             return new Bitmap(
-                Math.Max(imageWidthPx.Value, VisualizationDefaults.OutputWidthPx),
-                Math.Max(imageHeightPx.Value, VisualizationDefaults.OutputHeightPx));
+                imageWidthPx.Value, imageHeightPx.Value);
         }
 
-        var bounds = CalculateCloudBounds(wordLayouts);
         var width = imageWidthPx ?? bounds.Width + padding * 2;
         var height = imageHeightPx ?? bounds.Height + padding * 2;
 
@@ -43,7 +51,7 @@ public class BasicCloudRenderer : ICloudRenderer
             Math.Max(height, VisualizationDefaults.OutputHeightPx));
     }
 
-    private void DrawWordsOnBitmap(Bitmap bitmap, List<WordLayout> wordLayouts,
+    private Result<Bitmap> DrawWordsOnBitmap(Bitmap bitmap, List<WordLayout> wordLayouts,
         VisualizationOptions visualizationOptions)
     {
         using var graphics = Graphics.FromImage(bitmap);
@@ -51,7 +59,7 @@ public class BasicCloudRenderer : ICloudRenderer
         graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
         if (wordLayouts.Count == 0)
-            return;
+            return bitmap.AsResult();
 
         if (visualizationOptions.ImageWidthPx > 0)
         {
@@ -65,6 +73,8 @@ public class BasicCloudRenderer : ICloudRenderer
                 DrawSingleWord(graphics, layout, cloudBounds, visualizationOptions);
             }
         }
+
+        return bitmap.AsResult();
     }
 
     private void DrawWordsWithFixedSize(Graphics graphics, List<WordLayout> wordLayouts,
