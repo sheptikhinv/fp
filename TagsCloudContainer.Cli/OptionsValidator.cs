@@ -15,15 +15,15 @@ public static class OptionsValidator
             ValidateOutputPath(options.OutputFilePath),
             ValidateOnlyPositiveValues(options.OutputWidthPx, nameof(options.OutputWidthPx), isRequired: false),
             ValidateOnlyPositiveValues(options.OutputHeightPx, nameof(options.OutputHeightPx), isRequired: false),
-            string.IsNullOrEmpty(options.FontFamily) ? Result.Ok() : ValidateFont(options.FontFamily),
+            ValidateFont(options.FontFamily),
             ValidateOnlyPositiveValues<float>(options.FontSize, nameof(options.FontSize), isRequired: false),
             ValidateColor(options.BackgroundColor),
             ValidateColor(options.TextColor),
-            ValidateOnlyPositiveValues<double>(options.AngleStepRadians, nameof(options.AngleStepRadians), isRequired: false)
+            ValidateOnlyPositiveValues<double>(options.AngleStepRadians, nameof(options.AngleStepRadians),
+                isRequired: false)
         };
 
         var errors = validations
-            .Where(r => !r.IsSuccess)
             .Select(r => r.Error)
             .ToList();
 
@@ -43,21 +43,21 @@ public static class OptionsValidator
                 : Result.Ok();
         }
 
-        return !File.Exists(filePath)
-            ? Result.Fail<None>($"File {filePath} not found")
-            : Result.Ok();
+        return File.Exists(filePath)
+            ? Result.Ok()
+            : Result.Fail<None>($"File {filePath} not found");
     }
 
     private static Result<None> ValidateOutputPath(string? outputPath)
     {
         if (outputPath == null) return Result.Ok();
         var imageFormat = Path.GetExtension(outputPath).ToLower().GetImageFormat();
-        return !imageFormat.IsSuccess
-            ? Result.Fail<None>(imageFormat.Error)
-            : Result.Ok();
+        return imageFormat.IsSuccess
+            ? Result.Ok()
+            : Result.Fail<None>(imageFormat.Error);
     }
 
-    private static Result<None> ValidateOnlyPositiveValues<T>(T? value, string argName, bool isRequired = true) 
+    private static Result<None> ValidateOnlyPositiveValues<T>(T? value, string argName, bool isRequired = true)
         where T : struct, IComparable<T>
     {
         if (value == null)
@@ -73,12 +73,15 @@ public static class OptionsValidator
             : Result.Ok();
     }
 
-    private static Result<None> ValidateFont(string fontName)
+    private static Result<None> ValidateFont(string? fontName)
     {
+        if (fontName == null) return Result.Ok();
         var tempFont = new Font(fontName, 12);
-        return tempFont.Name == fontName
+        var result = tempFont.Name == fontName
             ? Result.Ok()
             : Result.Fail<None>($"Font {fontName} not found");
+        tempFont.Dispose();
+        return result;
     }
 
     private static Result<None> ValidateColor(string color)
