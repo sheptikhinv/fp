@@ -11,7 +11,6 @@ namespace TagsCloudContainer.Cli;
 
 public class Client
 {
-    [SuppressMessage("Interoperability", "CA1416:Проверка совместимости платформы")]
     public void Run(Options options)
     {
         var container = Startup.ConfigureServices(options);

@@ -14,8 +14,7 @@ public class BasicCloudRenderer : ICloudRenderer
     {
         _random = new Random();
     }
-
-    [SuppressMessage("Interoperability", "CA1416:Проверка совместимости платформы")]
+    
     public Result<Bitmap> RenderCloud(List<WordLayout> wordLayouts, VisualizationOptions visualizationOptions)
     {
         var bitmap = CalculateCloudBounds(wordLayouts).AsResult()
