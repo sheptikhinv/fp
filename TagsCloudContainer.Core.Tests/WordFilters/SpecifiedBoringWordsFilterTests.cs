@@ -1,4 +1,3 @@
-using TagsCloudContainer.Core.FileReaders;
 using TagsCloudContainer.Core.WordFilters;
 
 namespace TagsCloudContainer.Core.Tests.WordFilters;

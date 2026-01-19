@@ -1,5 +1,4 @@
 using System.Drawing;
-using DocumentFormat.OpenXml.Office2013.Word;
 using TagsCloudContainer.Core.Utils;
 using Color = System.Drawing.Color;
 
