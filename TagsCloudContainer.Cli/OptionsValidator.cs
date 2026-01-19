@@ -14,13 +14,13 @@ public static class OptionsValidator
             ValidatePath(options.FilePath, isRequired: true),
             ValidatePath(options.FilterFilePath, isRequired: false),
             ValidateOutputPath(options.OutputFilePath),
-            ValidateOnlyPositiveValues(options.OutputWidthPx, "OutputWidthPx", isRequired: false),
-            ValidateOnlyPositiveValues(options.OutputHeightPx, "OutputHeightPx", isRequired: false),
+            ValidateOnlyPositiveValues(options.OutputWidthPx, nameof(options.OutputWidthPx), isRequired: false),
+            ValidateOnlyPositiveValues(options.OutputHeightPx, nameof(options.OutputHeightPx), isRequired: false),
             string.IsNullOrEmpty(options.FontFamily) ? Result.Ok() : ValidateFont(options.FontFamily),
-            options.FontSize <= 0 ? Result.Fail<None>("Value FontSize must be positive") : Result.Ok(),
+            ValidateOnlyPositiveValues<float>(options.FontSize, nameof(options.FontSize), isRequired: false),
             ValidateColor(options.BackgroundColor),
             ValidateColor(options.TextColor),
-            options.AngleStepRadians <= 0 ? Result.Fail<None>("Value AngleStepRadians must be positive") : Result.Ok()
+            ValidateOnlyPositiveValues<double>(options.AngleStepRadians, nameof(options.AngleStepRadians), isRequired: false)
         };
 
         var errors = validations
@@ -58,7 +58,8 @@ public static class OptionsValidator
             : Result.Ok();
     }
 
-    private static Result<None> ValidateOnlyPositiveValues(int? value, string argName, bool isRequired = true)
+    private static Result<None> ValidateOnlyPositiveValues<T>(T? value, string argName, bool isRequired = true) 
+        where T : struct, IComparable<T>
     {
         if (value == null)
         {
@@ -67,7 +68,8 @@ public static class OptionsValidator
                 : Result.Ok();
         }
 
-        return value <= 0
+        var zero = default(T);
+        return value.Value.CompareTo(zero) <= 0
             ? Result.Fail<None>($"Value {argName} must be positive")
             : Result.Ok();
     }
