@@ -37,6 +37,6 @@ public class Client
             })
             .Then(data => FileSaver.SaveFile(data.bitmap, data.output))
             .Then(output => Console.WriteLine($"Visualization saved to file {output}"))
-            .OnFail(Console.WriteLine);
+            .OnFail(error => Console.WriteLine(error));
     }
 }
