@@ -5,28 +5,26 @@ namespace TagsCloudContainer.Core.Utils;
 
 public static class FileSaver
 {
-    public static void SaveFile(Bitmap bitmap, string path)
+    public static Result<string> SaveFile(Bitmap bitmap, string path)
     {
         var extension = Path.GetExtension(path).ToLower();
-        bitmap.Save(path, extension.GetImageFormat());
+        var imageFormat = extension.GetImageFormat();
+        if (!imageFormat.IsSuccess)
+            return Result.Fail<string>(imageFormat.Error);
+        bitmap.Save(path, imageFormat.Value);
+        return Result.Ok(path);
     }
 
-    private static ImageFormat GetImageFormat(this string extension)
+    public static Result<ImageFormat> GetImageFormat(this string extension)
     {
-        switch (extension)
+        return extension switch
         {
-            case ".jpg":
-                return ImageFormat.Jpeg;
-            case ".png":
-                return ImageFormat.Png;
-            case ".bmp":
-                return ImageFormat.Bmp;
-            case ".gif":
-                return ImageFormat.Gif;
-            case ".tiff":
-                return ImageFormat.Tiff;
-            default:
-                throw new ArgumentOutOfRangeException("extension", "Unsupported image format");
-        }
+            ".jpg" => ImageFormat.Jpeg.AsResult(),
+            ".png" => ImageFormat.Png.AsResult(),
+            ".bmp" => ImageFormat.Bmp.AsResult(),
+            ".gif" => ImageFormat.Gif.AsResult(),
+            ".tiff" => ImageFormat.Tiff.AsResult(),
+            _ => Result.Fail<ImageFormat>($"Unknown image format {extension}")
+        };
     }
 }
