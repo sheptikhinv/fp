@@ -12,6 +12,7 @@ public static class FileSaver
         if (!imageFormat.IsSuccess)
             return Result.Fail<string>(imageFormat.Error);
         bitmap.Save(path, imageFormat.Value);
+        bitmap.Dispose();
         return Result.Ok(path);
     }
 
