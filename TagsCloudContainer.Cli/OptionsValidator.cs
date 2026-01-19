@@ -24,6 +24,7 @@ public static class OptionsValidator
         };
 
         var errors = validations
+            .Where(r => !r.IsSuccess)
             .Select(r => r.Error)
             .ToList();
 
